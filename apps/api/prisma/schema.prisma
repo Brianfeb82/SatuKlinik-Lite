@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id          String   @id @default(uuid())
+  nik         String   @unique
+  satusehatId String?  @unique @map("satusehat_id")
+  name        String
+  birthDate   String   @map("birth_date") // ISO date string
+  gender      String   // male | female | other | unknown
+  phone       String?
+  address     String?
+  syncStatus  String   @default("draft") @map("sync_status") // draft | pending | synced | error
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  encounters    Encounter[]
+  diagnoses     Diagnosis[]
+  prescriptions Prescription[]
+
+  @@map("patients")
+}
+
+model Encounter {
+  id                   String   @id @default(uuid())
+  patientId            String   @map("patient_id")
+  patient              Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  satusehatEncounterId String?  @unique @map("satusehat_encounter_id")
+  practitionerIhsId    String   @map("practitioner_ihs_id")
+  locationId           String   @map("location_id")
+  status               String   @default("arrived") // arrived | in_progress | finished | cancelled
+  periodStart          DateTime @map("period_start")
+  periodEnd            DateTime? @map("period_end")
+  subjective           String?
+  objective            String?  // JSON string {td, hr, temp, rr, spo2}
+  syncStatus           String   @default("draft") @map("sync_status")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  diagnoses     Diagnosis[]
+  prescriptions Prescription[]
+
+  @@index([patientId])
+  @@map("encounters")
+}
+
+model Diagnosis {
+  id                   String   @id @default(uuid())
+  encounterId          String   @map("encounter_id")
+  encounter            Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  patientId            String   @map("patient_id")
+  patient              Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  satusehatConditionId String?  @unique @map("satusehat_condition_id")
+  icd10Code            String   @map("icd10_code")
+  icd10Display         String   @map("icd10_display")
+  category             String   @default("primary") // primary | secondary
+  clinicalStatus       String   @default("active") @map("clinical_status")
+  verificationStatus   String   @default("confirmed") @map("verification_status")
+  syncStatus           String   @default("draft") @map("sync_status")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([encounterId])
+  @@index([icd10Code])
+  @@map("diagnoses")
+}
+
+model Prescription {
+  id                    String   @id @default(uuid())
+  encounterId           String   @map("encounter_id")
+  encounter             Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  patientId             String   @map("patient_id")
+  patient               Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  satusehatMedicationId String?  @unique @map("satusehat_medication_id")
+  kfaCode               String   @map("kfa_code")
+  medicationName        String   @map("medication_name")
+  dosageInstruction     String   @map("dosage_instruction")
+  doseQuantity          Float    @map("dose_quantity")
+  doseUnit              String   @map("dose_unit")
+  frequencyPerDay       Int      @map("frequency_per_day")
+  durationDays          Int      @map("duration_days")
+  syncStatus            String   @default("draft") @map("sync_status")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([encounterId])
+  @@map("prescriptions")
+}
+
+model SyncQueue {
+  id         String   @id @default(uuid())
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  payload    String   // JSON string
+  attempts   Int      @default(0)
+  lastError  String?  @map("last_error")
+  status     String   @default("pending") // draft | pending | synced | error
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([entityType, entityId])
+  @@map("sync_queue")
+}
