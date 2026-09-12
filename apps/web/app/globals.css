@@ -5,7 +5,8 @@
   --radius: 14px;
 }
 * { box-sizing: border-box; }
-html, body { width: 100%; min-width: 0; overflow-x: hidden; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html, body { width: 100%; min-width: 0; overflow-x: clip; }
 body { font-family: 'Inter', system-ui, -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--ink); }
 a { color: inherit; }
 .topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: #0f172a; color: #fff; }
@@ -41,7 +42,7 @@ a { color: inherit; }
 .btn.teal { background: var(--teal); }
 .btn:disabled { opacity: .55; cursor: not-allowed; }
 table.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-.table-wrap { width: 100%; min-width: 0; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-wrap { display: block; width: 100%; min-width: 0; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; touch-action: pan-x pan-y; scrollbar-width: thin; }
 .tbl th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 8px; border-bottom: 1px solid var(--line); }
 .tbl td { padding: 9px 8px; border-bottom: 1px solid #f1f5f9; }
 .tbl tr.sel { background: #eff6ff; }
@@ -75,22 +76,27 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   .topbar .pill { padding: 6px 9px; font-size: 11px; }
   .sidebar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; overflow: visible; padding: 8px 14px; }
   .nav-item { width: 100%; justify-content: center; padding: 8px; font-size: 13px; }
-  .main { width: 100%; max-width: 100vw; padding: 14px; overflow-x: hidden; }
+  .main { width: 100%; max-width: 100vw; padding: 14px; overflow-x: clip; }
   .main > .card, .main > .layout-2, .layout-2 > .card { width: 100%; max-width: 100%; min-width: 0; }
-  .main h2 { font-size: 20px; }
-  .card { padding: 14px; border-radius: 12px; }
+  .main h2 { font-size: 20px; line-height: 1.25; }
+  .main p, .card p, .card .muted, .demo-strip { font-size: 14px; line-height: 1.55; overflow-wrap: break-word; }
+  .card { padding: 14px; border-radius: 12px; overflow: visible; }
   .grid-stats { gap: 8px; margin: 12px 0; }
   .stat { padding: 12px; }
   .stat .v { font-size: 22px; }
   .searchbar { flex-wrap: wrap; }
   .searchbar .inp { width: 100% !important; flex: 1 0 100% !important; }
   .searchbar .btn { width: 100%; }
-  .inp, .sel, textarea.inp { max-width: 100%; font-size: 16px; }
+  .inp, .sel, textarea.inp { max-width: 100%; font-size: 16px; line-height: 1.5; }
+  textarea.inp { min-height: 88px; }
   .vitals { grid-template-columns: repeat(2, 1fr); }
   .row > .btn { min-height: 44px; }
-  table.tbl { min-width: 520px; }
-  .table-wrap { min-width: 0; max-width: 100%; }
+  table.tbl { min-width: 560px; }
+  .tbl th, .tbl td { white-space: nowrap; }
+  .tbl td:first-child { white-space: normal; min-width: 140px; }
+  .table-wrap { min-width: 0; max-width: 100%; cursor: grab; }
+  .suggest { font-size: 14px; line-height: 1.5; }
   .suggest .row:first-child { align-items: flex-start !important; }
   .suggest .row:first-child span { overflow-wrap: anywhere; }
-  code { display: block; overflow-x: auto; white-space: nowrap; }
+  code { display: block; max-width: 100%; white-space: normal !important; word-break: break-all; overflow-wrap: anywhere; font-size: 11px !important; line-height: 1.5; background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
 }
