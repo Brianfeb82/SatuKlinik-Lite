@@ -73,11 +73,11 @@ export default function Home() {
       <header className="topbar">
         <div className="logo">SatuKlinik Lite <span className="badge">PWA · FHIR R4</span></div>
         <div className="spacer" />
-        <button className="btn ghost" onClick={() => setOnline((v) => !v)} title="Toggle untuk demo offline ke juri">
+        <button className="btn ghost mode-toggle" onClick={() => setOnline((v) => !v)} title="Toggle untuk demo offline ke juri">
           {online ? 'Mode: Online' : 'Mode: Offline'}
         </button>
-        <span className={`pill ${online ? 'online' : 'offline'}`}>{online ? '● Online' : '● Offline'}</span>
-        <span className="pill pending">{outboxCount} pending sync</span>
+        <span className={`pill connection-status ${online ? 'online' : 'offline'}`}>{online ? '● Online' : '● Offline'}</span>
+        <span className="pill sync-status pending">{outboxCount} pending sync</span>
       </header>
 
       <div className="shell">
